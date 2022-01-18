@@ -31,3 +31,7 @@ networks:
 The hostname is the container name, eg. for database connection use `DATABASE_HOST=DockerMySQL` and you need to use the internal port of the mysql container `3306` not the exposed one.
 
 PS: You need to use Docker-compose Version > 2 also in your other containers to use the network command.
+
+## Backup
+
+May look into following option for production safety: <https://hub.docker.com/r/databack/mysql-backup>
