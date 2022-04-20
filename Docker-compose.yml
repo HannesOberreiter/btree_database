@@ -20,6 +20,27 @@ services:
       networks:
         - btree-db-network
 
+    maria:
+      container_name: DockerMariaDB
+      image: mariadb:latest
+      command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+      restart: always
+      env_file: .env
+      environment:
+        MYSQL_ROOT_HOST: '%'
+        MARIADB_USER: ${DATABASE_USERNAME}
+        MARIADB_PASSWORD: ${DATABASE_PASSWORD}
+        MARIADB_ROOT_PASSWORD: ${DATABASE_ROOT}
+      volumes: 
+        - ./maria:/var/lib/mysql
+        - ./init-maria:/docker-entrypoint-initdb.d
+      ports:
+        - "33062:3306"
+      networks:
+        - btree-maria-network
+
 networks:
   btree-db-network:
+    driver: bridge
+  btree-maria-network:
     driver: bridge
