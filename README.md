@@ -1,6 +1,6 @@
-# Helper Repo - Docker MySQL
+# Helper Repo - Docker MySQL and MariaDB
 
-Helper Repo for setting up Docker Container with multiple MySQL databases. Used in production and development.
+Helper Repo for setting up Docker Container with multiple MySQL and MariaDB databases. Used in production and development.
 
 Idea from this blog article:
 
@@ -28,7 +28,7 @@ networks:
     name: btree-docker-mysql_btree-db-network
 ```
 
-The hostname is the container name, eg. for database connection use `DATABASE_HOST=DockerMySQL` and you need to use the internal port of the mysql container `3306` not the exposed one.
+The hostname is the container name, eg. for database connection use `DATABASE_HOST=DockerMySQL` or `DATABASE_HOST=DockerMariaDB` and you need to use the internal port of the mysql container `3306` not the exposed one.
 
 PS: You need to use Docker-compose Version > 2 also in your other containers to use the network command.
 
