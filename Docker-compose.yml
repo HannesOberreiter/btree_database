@@ -42,5 +42,11 @@ services:
 networks:
   btree-db-network:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
   btree-maria-network:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
