@@ -56,6 +56,8 @@ upstream beekeeping_news_com_strapi {
 }
 ```
 
-## Backup
+## Backups
 
-May look into following option for production safety: <https://hub.docker.com/r/databack/mysql-backup>
+Backups are done daily with `databack/mysql-backup`: <https://hub.docker.com/r/databack/mysql-backup>
+
+File destination is a secure Nextcloud server, were as the backup folder is mounted on linux with webDAV: <https://docs.nextcloud.com/server/23/user_manual/en/files/access_webdav.html#creating-webdav-mounts-on-the-linux-command>
