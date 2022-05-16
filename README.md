@@ -61,3 +61,14 @@ upstream beekeeping_news_com_strapi {
 Backups are done daily with `databack/mysql-backup`: <https://hub.docker.com/r/databack/mysql-backup>
 
 File destination is a secure Nextcloud server, were as the backup folder is mounted on linux with webDAV: <https://docs.nextcloud.com/server/23/user_manual/en/files/access_webdav.html#creating-webdav-mounts-on-the-linux-command>
+
+## Other Server Stuff
+
+To keep the server updated and clean of memory leaks I restart it daily and perform updates daily:
+
+```bash
+# Custom CroJobs
+0 2 * * * root /usr/bin/apt update -q -y >> /var/log/apt/automaticupdates.log
+0 3 * * * root /usr/bin/apt upgrade -q -y >> /var/log/apt/automaticupdates.log
+0 4 * * * root /sbin/reboot
+```
