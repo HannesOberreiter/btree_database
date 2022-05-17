@@ -50,13 +50,14 @@ services:
       user: "0"
       volumes:
         # soft link to nextcloud mount ln -s /nextcloud /repos/database
-        - /nextcloud:/db
+        - ./nextcloud:/db
       environment:
         DB_DUMP_TARGET: '/db'
         DB_USER: ${DATABASE_USERNAME}
         DB_PASS: ${DATABASE_PASSWORD}
         DB_DUMP_FREQ: 1440
         DB_DUMP_BEGIN: 2330
+        DB_DUMP_BY_SCHEMA: 'true'
         DB_SERVER: 'DockerMySQL'
         DB_PORT: 3306
       networks:
@@ -72,4 +73,4 @@ networks:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.18.0.0/16
+        - subnet: 172.19.0.0/16
