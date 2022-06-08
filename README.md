@@ -32,6 +32,10 @@ The hostname is the container name, eg. for database connection use `DATABASE_HO
 
 PS: You need to use Docker-compose Version > 2 also in your other containers to use the network command.
 
+## Docker Image upgrade
+
+Use `docker-compose pull` to get latest images, then `docker_compose down && docker-compose up -d`. Use `docker image prune -af` to remove unused images.
+
 ## Fixed IP for Reverse Proxy
 
 To use a fixed IP range for your local ngnix reverse proxy you can set a subnet mask:
