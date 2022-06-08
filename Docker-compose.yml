@@ -5,7 +5,9 @@ services:
       container_name: DockerMySQL
       image: mysql:8
       command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci  --default-authentication-plugin=mysql_native_password
-      restart: always
+      restart: never
+      profiles:
+        - donotstart
       env_file: .env
       environment:
         MYSQL_ROOT_HOST: '%'
@@ -46,7 +48,9 @@ services:
     backup:
       container_name: DatabaseBackup
       image: databack/mysql-backup
-      restart: always
+      restart: never
+      profiles:
+        - donotstart
       user: "0"
       volumes:
         # soft link to nextcloud mount ln -s /nextcloud /repos/database
@@ -58,10 +62,12 @@ services:
         DB_DUMP_FREQ: 1440
         DB_DUMP_BEGIN: 2330
         DB_DUMP_BY_SCHEMA: 'true'
-        DB_SERVER: 'DockerMySQL'
+        SINGLE_DATABASE: 'true'
+        MYSQLDUMP_OPTS: '--skip-lock-tables'
+        DB_SERVER: 'DockerMariaDB'
         DB_PORT: 3306
       networks:
-        - btree-db-network
+        - btree-maria-network
 
 networks:
   btree-db-network:
