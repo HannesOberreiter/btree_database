@@ -54,9 +54,10 @@ services:
       user: "0"
       volumes:
         # soft link to nextcloud mount ln -s /nextcloud /repos/database
-        - ./nextcloud:/db
+        #- ./nextcloud:/db
       environment:
-        DB_DUMP_TARGET: '/db'
+        #DB_DUMP_TARGET: '/db'
+        DB_DUMP_TARGET: s3://hetzner-cloud-backup/mysql
         DB_USER: ${DATABASE_USERNAME}
         DB_PASS: ${DATABASE_PASSWORD}
         DB_DUMP_FREQ: 1440
@@ -65,6 +66,9 @@ services:
         SINGLE_DATABASE: 'true'
         MYSQLDUMP_OPTS: '--skip-lock-tables'
         DB_SERVER: 'DockerMariaDB'
+        AWS_ACCESS_KEY_ID: 
+        AWS_SECRET_ACCESS_KEY: 
+        AWS_DEFAULT_REGION: eu-central-1
         DB_PORT: 3306
       networks:
         - btree-maria-network
