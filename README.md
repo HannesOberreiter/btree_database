@@ -1,4 +1,4 @@
-# Helper Repo - Docker MySQL and MariaDB
+# Helper Repo - Docker MariaDB
 
 Helper Repo for setting up Docker Container with multiple MariaDB databases. Used in production and development.
 
