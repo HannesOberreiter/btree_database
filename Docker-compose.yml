@@ -1,29 +1,6 @@
-version: '3.3'
+version: '3.8'
     
 services:
-    db:
-      container_name: DockerMySQL
-      image: mysql:8
-      command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci  --default-authentication-plugin=mysql_native_password
-      restart: never
-      profiles:
-        - donotstart
-      env_file: .env
-      environment:
-        MYSQL_ROOT_HOST: '%'
-        MYSQL_USER: ${DATABASE_USERNAME}
-        MYSQL_PASSWORD: ${DATABASE_PASSWORD}
-        MYSQL_ROOT_PASSWORD: ${DATABASE_ROOT}
-      volumes: 
-        # On live server the db folder is a soft link to permament file storage
-        # ls -s <source> <destination>
-        - ./db:/var/lib/mysql
-        - ./init:/docker-entrypoint-initdb.d
-      ports:
-        - "33061:3306"
-      networks:
-        - btree-db-network
-
     maria:
       container_name: DockerMariaDB
       image: mariadb:latest
@@ -35,6 +12,7 @@ services:
         MARIADB_USER: ${DATABASE_USERNAME}
         MARIADB_PASSWORD: ${DATABASE_PASSWORD}
         MARIADB_ROOT_PASSWORD: ${DATABASE_ROOT}
+        MARIADB_AUTO_UPGRADE: 'true'
       volumes: 
         # On live server the db folder is a soft link to permament file storage
         # ls -s <source> <destination>
@@ -45,40 +23,7 @@ services:
       networks:
         - btree-maria-network
 
-    backup:
-      container_name: DatabaseBackup
-      image: databack/mysql-backup
-      restart: never
-      profiles:
-        - donotstart
-      user: "0"
-      volumes:
-        # soft link to nextcloud mount ln -s /nextcloud /repos/database
-        #- ./nextcloud:/db
-      environment:
-        #DB_DUMP_TARGET: '/db'
-        DB_DUMP_TARGET: s3://hetzner-cloud-backup/mysql
-        DB_USER: ${DATABASE_USERNAME}
-        DB_PASS: ${DATABASE_PASSWORD}
-        DB_DUMP_FREQ: 1440
-        DB_DUMP_BEGIN: 2330
-        DB_DUMP_BY_SCHEMA: 'true'
-        SINGLE_DATABASE: 'true'
-        MYSQLDUMP_OPTS: '--skip-lock-tables'
-        DB_SERVER: 'DockerMariaDB'
-        AWS_ACCESS_KEY_ID: 
-        AWS_SECRET_ACCESS_KEY: 
-        AWS_DEFAULT_REGION: eu-central-1
-        DB_PORT: 3306
-      networks:
-        - btree-maria-network
-
 networks:
-  btree-db-network:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.18.0.0/16
   btree-maria-network:
     driver: bridge
     ipam:

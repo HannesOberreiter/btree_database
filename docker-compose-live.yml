@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  maria:
+    container_name: DockerMariaDB
+    image: mariadb:latest
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    restart: always
+    env_file: .env
+    environment:
+      MYSQL_ROOT_HOST: '%'
+      MARIADB_USER: ${DATABASE_USERNAME}
+      MARIADB_PASSWORD: ${DATABASE_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${DATABASE_ROOT}
+      MARIADB_AUTO_UPGRADE: 'true'
+    volumes:
+      # On live server the db folder is a soft link to permament file storage
+      # ln -s <source> <destination>
+      - ./maria:/var/lib/mysql
+      - ./init-maria:/docker-entrypoint-initdb.d
+    ports:
+      - "33061:3306"
+    networks:
+      - btree-db-network
+
+  backup:
+    container_name: DatabaseBackup
+    image: databack/mysql-backup:master
+    restart: always
+    user: "0"
+    #volumes:
+    # soft link to nextcloud mount ln -s /root/nextcloud /root/repos/database
+    #- ./nextcloud:/backup
+    environment:
+      DB_DUMP_TARGET: s3://hetzner-cloud-backup/mysql
+      #DB_DUMP_TARGET: '/backup'
+      DB_USER: ${DATABASE_USERNAME}
+      DB_PASS: ${DATABASE_PASSWORD}
+      DB_DUMP_FREQ: 720
+      #DB_DUMP_CRON: 0 */6 * * *
+      DB_DUMP_BY_SCHEMA: 'true'
+      SINGLE_DATABASE: 'true'
+      MYSQLDUMP_OPTS: '--skip-lock-tables'
+      AWS_ACCESS_KEY_ID: AWS_ACCESS_KEY_ID
+      AWS_SECRET_ACCESS_KEY: AWS_SECRET_ACCESS_KEY
+      AWS_DEFAULT_REGION: eu-central-1
+      DB_SERVER: 'DockerMariaDB'
+      DB_PORT: 3306
+    networks:
+      - btree-db-network
+
+networks:
+  btree-db-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16

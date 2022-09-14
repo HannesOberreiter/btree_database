@@ -1,22 +1,25 @@
 # Helper Repo - Docker MySQL and MariaDB
 
-Helper Repo for setting up Docker Container with multiple MySQL and MariaDB databases. Used in production and development.
+Helper Repo for setting up Docker Container with multiple MariaDB databases. Used in production and development.
 
-Idea from this blog article:
-
-<https://onexlab-io.medium.com/docker-compose-mysql-multiple-database-fe640938e06b>
+- [Repo - b.tree Server API](https://github.com/HannesOberreiter/btree_server)
+  - Live: <https://api.btree.at>
+  - Beta: <https://api-beta.btree.at>
+- [Private Repo - b.tree Frontend](https://github.com/HannesOberreiter/btree_vue)
+  - Live: <https://app.btree.at>
+  - Beta: <https://beta.btree.at>
 
 ## Setup
 
-The `db` folder will be our local volume for the database. Inside the `init` folder you can generate the databases. Inside the `init` you may need to adapt the user to your db user as stated in the `.env` file.
+The `maria` folder will be our local volume for the database. Inside the `init-maria` you can add scripts which are run on a new database instance. The user access on created tables must be the same as in your `.env` file.
 
 ## Network
 
-Other containers need to attach to the custom created network `btree-db-network`.
+Other containers need to attach to the custom created network `btree-maria-network`.
 
 ```bash
 # Docker-compose.yml - of your other container
-version: "3.3"
+version: "3.8"
 
 services:
   your-service:
@@ -25,16 +28,16 @@ services:
 networks:
   default:
     external: true
-    name: btree-docker-mysql_btree-db-network
+    name: btree-docker-mysql_btree-maria-network
 ```
 
-The hostname is the container name, eg. for database connection use `DATABASE_HOST=DockerMySQL` or `DATABASE_HOST=DockerMariaDB` and you need to use the internal port of the mysql container `3306` not the exposed one.
+The hostname is the container name, eg. for database connection use `DATABASE_HOST=DockerMariaDB` and you need to use the internal port of the mysql container `3306` not the exposed one.
 
 PS: You need to use Docker-compose Version > 2 also in your other containers to use the network command.
 
 ## Docker Image upgrade
 
-Use `docker-compose pull` to get latest images, then `docker_compose down && docker-compose up -d`. Use `docker image prune -af` to remove unused images.
+Use `docker compose pull` to get latest images, then `docker_compose down && docker compose up -d`. Use `docker image prune -af` to remove unused images.
 
 ## Fixed IP for Reverse Proxy
 
@@ -62,13 +65,21 @@ upstream beekeeping_news_com_strapi {
 
 ## Backups
 
-Backups are done daily with `databack/mysql-backup`: <https://hub.docker.com/r/databack/mysql-backup>
+Backups are done twice daily with [databack/mysql-backup](https://hub.docker.com/r/databack/mysql-backup). The backups are saved to Amazon AWS S3 storage.
 
-Backups are saved to Amazon AWS S3 storage.
+### Restoration
 
-Old: File destination is a secure Nextcloud server, were as the backup folder is mounted on linux with webDAV: <https://docs.nextcloud.com/server/23/user_manual/en/files/access_webdav.html#creating-webdav-mounts-on-the-linux-command>
+See [docker-compose-beta.yml](docker-compose-beta.yml) how the container can restore a backup from AWS S3 storage. After DB restoration `mysqlcheck --auto-repair --optimize --all-databases --verbose` must be run, otherwise performance is bad. This will happen automatically if  the `post-restore` folder script is added to the docker volume.
 
 ## Other Server Stuff
+
+### Docker Compose Files
+
+[docker-compose-beta.yml](docker-compose-beta.yml): Is used for a secondary MariaDB instance running a specific version our database. This is used for data restoration tests and can be used for beta testing, as [api-beta.btree.at](https://api-beta.btree.at) is connected to the same network it.
+
+[docker-compose-live.yml](docker-compose-live.yml): Is used for a main MariaDB instance and backups are saved twice a day to AWS S3. The main api server [api.btree.at](https://api.btree.at) is connected to the same network.
+
+### Daily Cron-Jobs
 
 To keep the server updated and clean of memory leaks I restart it daily and perform updates daily:
 
@@ -81,17 +92,20 @@ To keep the server updated and clean of memory leaks I restart it daily and perf
 @reboot   root sleep 5000 && root/repos/update_images.sh
 ```
 
-In addition docker containers are auto updated to latest version and cleanup of docker system on reboot.
+In addition docker containers are auto updated to latest version and clean up of docker system on reboot.
 
 ```bash
-# update_images.sh (chmod +x ./update_images.sh)
 #!/bin/bash
+# update_images.sh (chmod +x ./update_images.sh)
 cd /root/repos/beekeepernews-api
-docker-compose pull
-docker-compose up -d
+docker compose pull
+docker compose up -d
 cd /root/repos/btree-server
-docker-compose pull
-docker-compose up -d
+# docker-compose pull
+docker compose up -d
+cd /root/repos/btree-server-beta
+docker compose pull
+docker compose up -d
 
 # Cleanup
 docker image prune -a -f
