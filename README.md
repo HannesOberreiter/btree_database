@@ -9,7 +9,7 @@ Helper Repo for setting up Docker Container with multiple MariaDB databases. Use
   - Live: <https://app.btree.at>
   - Beta: <https://beta.btree.at>
 - [Repo - b.tree Database](https://github.com/HannesOberreiter/btree_database)
-- [Private Repo - b.tree iOS](https://github.com/HannesOberreiter/btree_ios)
+- [Repo - b.tree iOS](https://github.com/HannesOberreiter/btree_ios)
 
 ## Setup
 
@@ -114,4 +114,12 @@ docker image prune -a -f
 docker container prune -f
 docker volume prune -f
 docker network prune -f
+```
+
+### Ubuntu Auto-updates
+
+To turn on automatic security updates in Ubuntu use (may be redundant to previously mentioned cron job):
+
+```bash
+dpkg-reconfigure -plow unattended-upgrades
 ```
