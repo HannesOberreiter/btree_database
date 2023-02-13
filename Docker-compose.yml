@@ -1,27 +1,42 @@
-version: '3.8'
-    
+version: "3.8"
+
 services:
-    maria:
-      container_name: DockerMariaDB
-      image: mariadb:jammy
-      command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-      restart: always
-      env_file: .env
-      environment:
-        MYSQL_ROOT_HOST: '%'
-        MARIADB_USER: ${DATABASE_USERNAME}
-        MARIADB_PASSWORD: ${DATABASE_PASSWORD}
-        MARIADB_ROOT_PASSWORD: ${DATABASE_ROOT}
-        MARIADB_AUTO_UPGRADE: 'true'
-      volumes: 
-        # On live server the db folder is a soft link to permament file storage
-        # ls -s <source> <destination>
-        - ./maria:/var/lib/mysql
-        - ./init-maria:/docker-entrypoint-initdb.d
-      ports:
-        - "33062:3306"
-      networks:
-        - btree-maria-network
+  redis:
+    container_name: DockerRedis
+    image: redis:7-alpine
+    restart: always
+    env_file: .env
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    command: --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - ./redis:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - btree-maria-network
+
+  maria:
+    container_name: DockerMariaDB
+    image: mariadb:jammy
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    restart: always
+    env_file: .env
+    environment:
+      MYSQL_ROOT_HOST: "%"
+      MARIADB_USER: ${DATABASE_USERNAME}
+      MARIADB_PASSWORD: ${DATABASE_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${DATABASE_ROOT}
+      MARIADB_AUTO_UPGRADE: "true"
+    volumes:
+      # On live server the db folder is a soft link to permament file storage
+      # ls -s <source> <destination>
+      - ./maria:/var/lib/mysql
+      - ./init-maria:/docker-entrypoint-initdb.d
+    ports:
+      - "33062:3306"
+    networks:
+      - btree-maria-network
 
 networks:
   btree-maria-network:

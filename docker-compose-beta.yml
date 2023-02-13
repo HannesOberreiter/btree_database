@@ -1,6 +1,21 @@
-version: '3.8'
+version: "3.8"
 
 services:
+  redis:
+    container_name: DockerRedisBeta
+    image: redis:7-alpine
+    restart: always
+    env_file: .env
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    command: --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - ./redis-beta:/data
+    # No port needed on live server as we dont want to expose it, we connect via docker network
+    # host: container_name, port: 6379
+    networks:
+      - btree-db-network-beta
+
   maria:
     container_name: DockerMariaDBBeta
     image: mariadb:jammy
@@ -8,11 +23,11 @@ services:
     restart: always
     env_file: .env
     environment:
-      MYSQL_ROOT_HOST: '%'
+      MYSQL_ROOT_HOST: "%"
       MARIADB_USER: ${DATABASE_USERNAME}
       MARIADB_PASSWORD: ${DATABASE_PASSWORD}
       MARIADB_ROOT_PASSWORD: ${DATABASE_ROOT}
-      MARIADB_AUTO_UPGRADE: 'true'
+      MARIADB_AUTO_UPGRADE: "true"
     volumes:
       # On live server the db folder is a soft link to permament file storage
       # ln -s <source> <destination>
@@ -28,21 +43,21 @@ services:
     image: databack/mysql-backup:master
     profiles:
       - donotstart
-    restart: 'no'
+    restart: "no"
     user: "0"
     environment:
       DB_RESTORE_TARGET: S3_URI
-      DB_DUMP_DEBUG: 'true'
+      DB_DUMP_DEBUG: "true"
       DB_USER: ${DATABASE_USERNAME}
       DB_PASS: ${DATABASE_PASSWORD}
       DB_ROOT: ${DATABASE_ROOT}
-      DB_DUMP_BY_SCHEMA: 'true'
-      DB_NAMES: 'btree_node'
-      SINGLE_DATABASE: 'true'
+      DB_DUMP_BY_SCHEMA: "true"
+      DB_NAMES: "btree_node"
+      SINGLE_DATABASE: "true"
       AWS_ACCESS_KEY_ID: AWS_ACCESS_KEY_ID
       AWS_SECRET_ACCESS_KEY: AWS_SECRET_ACCESS_KEY
       AWS_DEFAULT_REGION: eu-central-1
-      DB_SERVER: 'DockerMariaDBBeta'
+      DB_SERVER: "DockerMariaDBBeta"
       DB_PORT: 3306
     volumes:
       - ./post-restore:/scripts.d/post-restore

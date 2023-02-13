@@ -15,6 +15,8 @@ Helper Repo for setting up Docker Container with multiple MariaDB databases. Use
 
 The `maria` folder will be our local volume for the database. Inside the `init-maria` you can add scripts which are run on a new database instance. The user access on created tables must be the same as in your `.env` file.
 
+The `redis` folder will be our local volume for the redis database dumps.
+
 ## Network
 
 Other containers need to attach to the custom created network `btree-maria-network`.
@@ -69,9 +71,13 @@ upstream beekeeping_news_com_strapi {
 
 Backups are done twice daily with [databack/mysql-backup](https://hub.docker.com/r/databack/mysql-backup). The backups are saved to Amazon AWS S3 storage.
 
+The redis database is only locally saved in the `redis` folder.
+
 ### Restoration
 
 See [docker-compose-beta.yml](docker-compose-beta.yml) how the container can restore a backup from AWS S3 storage. After DB restoration `mysqlcheck --auto-repair --optimize --all-databases --verbose` must be run, otherwise performance is bad. This will happen automatically if  the `post-restore` folder script is added to the docker volume.
+
+`redis` will auto restore on startup if it finds a dump file.
 
 ## Other Server Stuff
 
