@@ -129,3 +129,7 @@ To turn on automatic security updates in Ubuntu use (may be redundant to previou
 ```bash
 dpkg-reconfigure -plow unattended-upgrades
 ```
+
+## Kuma Documentation
+
+<https://github.com/louislam/uptime-kuma/wiki>
