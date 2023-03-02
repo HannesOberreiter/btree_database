@@ -44,7 +44,6 @@ services:
     profiles:
       - donotstart
     restart: "no"
-    user: "0"
     environment:
       DB_RESTORE_TARGET: ${DB_RESTORE_TARGET}
       DB_DUMP_DEBUG: "true"
