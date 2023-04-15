@@ -16,6 +16,20 @@ services:
     networks:
       - btree-maria-network
 
+  vector:
+    container_name: VectorRedis
+    image: redis/redis-stack-server:latest
+    restart: always
+    env_file: .env
+    environment:
+      REDIS_ARGS: --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - ./vector:/data
+    ports:
+      - "6380:6379"
+    networks:
+      - btree-maria-network
+
   maria:
     container_name: DockerMariaDB
     image: mariadb:jammy
