@@ -15,6 +15,7 @@ services:
     # host: container_name, port: 6379
     networks:
       - btree-db-network
+
   maria:
     container_name: DockerMariaDB
     image: mariadb:jammy
@@ -36,6 +37,18 @@ services:
       - "33061:3306"
     networks:
       - btree-db-network
+
+    vector:
+      container_name: VectorRedisBeta
+      image: redis/redis-stack-server:latest
+      restart: always
+      env_file: .env
+      environment:
+        REDIS_ARGS: --requirepass ${REDIS_PASSWORD} --port 6380
+      volumes:
+        - ./vector:/data
+      networks:
+        - btree-db-network
 
   backup:
     container_name: DatabaseBackup

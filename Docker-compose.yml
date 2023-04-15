@@ -22,11 +22,11 @@ services:
     restart: always
     env_file: .env
     environment:
-      REDIS_ARGS: --requirepass ${REDIS_PASSWORD}
+      REDIS_ARGS: --requirepass ${REDIS_PASSWORD} --port 6380
     volumes:
       - ./vector:/data
     ports:
-      - "6380:6379"
+      - "6380:6380"
     networks:
       - btree-maria-network
 

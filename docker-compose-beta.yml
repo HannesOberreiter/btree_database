@@ -38,6 +38,20 @@ services:
     networks:
       - btree-db-network-beta
 
+  vector:
+    container_name: VectorRedisBeta
+    image: redis/redis-stack-server:latest
+    restart: always
+    env_file: .env
+    environment:
+      REDIS_ARGS: --requirepass ${REDIS_PASSWORD} --port 6380
+    volumes:
+      - ./vector-beta:/data
+    ports:
+      - "6380:6379"
+    networks:
+      - btree-db-network-beta
+
   restore:
     container_name: DatabaseRestore
     image: databack/mysql-backup:master
