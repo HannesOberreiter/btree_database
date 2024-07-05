@@ -15,6 +15,8 @@ services:
     # host: container_name, port: 6379
     networks:
       - btree-db-network-beta
+    logging:
+      driver: 'local'
 
   maria:
     container_name: DockerMariaDBBeta
@@ -37,7 +39,9 @@ services:
       - "33062:3306"
     networks:
       - btree-db-network-beta
-
+    logging:
+      driver: 'local'
+      
   vector:
     container_name: VectorRedisBeta
     image: redis/redis-stack-server:latest
@@ -51,6 +55,8 @@ services:
       - "6380:6379"
     networks:
       - btree-db-network-beta
+    logging:
+      driver: 'local'
 
   restore:
     container_name: DatabaseRestore
@@ -77,6 +83,8 @@ services:
       - ./post-restore:/scripts.d/post-restore
     networks:
       - btree-db-network-beta
+    logging:
+      driver: 'local'
 
 networks:
   btree-db-network-beta:

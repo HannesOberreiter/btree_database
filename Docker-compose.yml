@@ -15,7 +15,9 @@ services:
       - "6379:6379"
     networks:
       - btree-maria-network
-
+    logging:
+      driver: 'local'
+      
   vector:
     container_name: VectorRedis
     image: redis/redis-stack-server:latest
@@ -29,6 +31,8 @@ services:
       - "6380:6380"
     networks:
       - btree-maria-network
+    logging:
+      driver: 'local'
 
   maria:
     container_name: DockerMariaDB
@@ -51,6 +55,8 @@ services:
       - "33062:3306"
     networks:
       - btree-maria-network
+    logging:
+      driver: 'local'
 
   restore:
     container_name: DatabaseRestore
@@ -76,6 +82,8 @@ services:
       - ./post-restore:/scripts.d/post-restore
     networks:
       - btree-maria-network
+    logging:
+      driver: 'local'
 
 networks:
   btree-maria-network:
