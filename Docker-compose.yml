@@ -58,6 +58,30 @@ services:
     logging:
       driver: 'local'
 
+  external:
+    container_name: DockerMariaDBExternal
+    image: mariadb:jammy
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    restart: always
+    env_file: .env
+    environment:
+      MYSQL_ROOT_HOST: "%"
+      MARIADB_USER: ${DATABASE_USERNAME}
+      MARIADB_PASSWORD: ${DATABASE_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${DATABASE_ROOT}
+      MARIADB_AUTO_UPGRADE: "true"
+    volumes:
+      # On live server the db folder is a soft link to permament file storage
+      # ls -s <source> <destination>
+      - ./maria-external:/var/lib/mysql
+      - ./init-maria:/docker-entrypoint-initdb.d
+    ports:
+      - "33063:3306"
+    networks:
+      - btree-maria-network
+    logging:
+      driver: 'local'
+
   restore:
     container_name: DatabaseRestore
     image: databack/mysql-backup:master
