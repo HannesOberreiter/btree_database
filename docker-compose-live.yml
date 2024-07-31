@@ -58,27 +58,27 @@ services:
 
   backup:
     container_name: DatabaseBackup
-    image: databack/mysql-backup:master
+    image: databack/mysql-backup:latest
     restart: always
     user: "0"
     #volumes:
     # soft link to nextcloud mount ln -s /root/nextcloud /root/repos/database
     #- ./nextcloud:/backup
     environment:
-      DB_DUMP_TARGET: s3://hetzner-cloud-backup/mysql
-      #DB_DUMP_TARGET: '/backup'
+      DB_DUMP_TARGET: s3://hetzner-cloud-backup/maria
+      DB_DUMP_DEBUG: true
+      DB_SERVER: DockerMariaDB
+      DB_NAMES: btree_node
       DB_USER: ${DATABASE_USERNAME}
       DB_PASS: ${DATABASE_PASSWORD}
-      DB_DUMP_FREQ: 720
-      #DB_DUMP_CRON: 0 */6 * * *
-      DB_DUMP_BY_SCHEMA: "true"
-      SINGLE_DATABASE: "true"
-      MYSQLDUMP_OPTS: "--skip-lock-tables"
-      AWS_ACCESS_KEY_ID: AWS_ACCESS_KEY_ID
-      AWS_SECRET_ACCESS_KEY: AWS_SECRET_ACCESS_KEY
-      AWS_DEFAULT_REGION: eu-central-1
-      DB_SERVER: "DockerMariaDB"
       DB_PORT: 3306
+      DB_DUMP_FREQ: 720
+      DB_DUMP_BY_SCHEMA: true
+      SINGLE_DATABASE: true
+      MYSQLDUMP_OPTS: '--skip-lock-tables'
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_DEFAULT_REGION: eu-central-1
     networks:
       - btree-db-network
     logging:

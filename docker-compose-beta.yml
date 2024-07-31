@@ -60,7 +60,7 @@ services:
 
   restore:
     container_name: DatabaseRestore
-    image: databack/mysql-backup:master
+    image: databack/mysql-backup:latest
     profiles:
       - donotstart
     restart: "no"
