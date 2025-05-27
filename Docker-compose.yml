@@ -4,7 +4,7 @@ services:
   redis:
     container_name: DockerRedis
     image: redis:7-alpine
-    restart: always
+    restart: unless-stopped
     env_file: .env
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
@@ -21,7 +21,7 @@ services:
   vector:
     container_name: VectorRedis
     image: redis/redis-stack-server:latest
-    restart: always
+    restart: unless-stopped
     env_file: .env
     environment:
       REDIS_ARGS: --requirepass ${REDIS_PASSWORD} --port 6380
@@ -38,7 +38,7 @@ services:
     container_name: DockerMariaDB
     image: mariadb:jammy
     command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-    restart: always
+    restart: unless-stopped
     env_file: .env
     environment:
       MYSQL_ROOT_HOST: "%"
@@ -62,7 +62,7 @@ services:
     container_name: DockerMariaDBUS
     image: mariadb:jammy
     command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-    restart: always
+    restart: unless-stopped
     env_file: .env
     environment:
       MYSQL_ROOT_HOST: "%"

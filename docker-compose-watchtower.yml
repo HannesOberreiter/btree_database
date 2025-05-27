@@ -1,0 +1,11 @@
+services:
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /root/.docker/config.json:/config.json
+    command: btree-server btree-server-beta --cleanup --interval 300 --rolling-restart
+    logging:
+      driver: 'local'
