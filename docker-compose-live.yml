@@ -60,6 +60,7 @@ services:
     container_name: DatabaseBackup
     image: databack/mysql-backup:latest
     restart: always
+    command: dump
     user: "0"
     #volumes:
     # soft link to nextcloud mount ln -s /root/nextcloud /root/repos/database

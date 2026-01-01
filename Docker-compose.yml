@@ -83,6 +83,7 @@ services:
   restore:
     container_name: DatabaseRestore
     image: databack/mysql-backup:master
+    command: restore
     profiles:
       - donotstart
     restart: "no"
